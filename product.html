@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Object — MONOLITH</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=41" />
+  <link rel="icon" href="media/logo-dark.png" />
+</head>
+<body>
+  <header class="bar" data-theme="dark">
+    <a class="logo" href="index.html" aria-label="MONOLITH">
+      <img class="logo-dark" src="media/logo-dark.png" alt="MONOLITH" style="display:block" />
+    </a>
+    <nav class="bar-nav" aria-label="Primary">
+      <a href="design.html">Design</a>
+      <a href="art.html">Art</a>
+      <a href="objects.html">Object</a>
+      <a href="services.html">Technic</a>
+      <a href="index.html#contact">Contact</a>
+    </nav>
+    <button class="bag" type="button" data-open-bag>Cart <span data-bag-count>0</span></button>
+  </header>
+  <main class="sheet-page" id="sheet">  </main>
+  <footer class="foot">
+    <div class="foot-contact">
+      <a href="mailto:monolithdesign.info@gmail.com">monolithdesign.info@gmail.com</a>
+      <a href="tel:+66866259407">+66 866259407</a>
+      <a href="https://lin.ee/zi0qAQb" target="_blank" rel="noreferrer">LINE</a>
+      <a href="https://instagram.com/monolith.design" target="_blank" rel="noreferrer">Instagram</a>
+    </div>
+    <p class="sr">MONOLITH</p>
+    <div class="foot-word" aria-hidden="true">
+      <span>MONO</span>
+      <div class="foot-reel">
+        <div class="foot-track">
+          <div class="foot-set">
+            <img src="media/for/design-present.jpg" alt="" />
+            <img src="media/art/hold-blue.jpg" alt="" />
+            <img src="media/card-holder.jpg" alt="" />
+            <img src="media/for/technic-screen.jpg" alt="" />
+            <img src="media/brand/wpall/board.png" alt="" />
+            <img src="media/art/print-magenta.jpg" alt="" />
+            <img src="media/pen-cup.jpg" alt="" />
+            <img src="media/for/technic-fabric.jpg" alt="" />
+            <img src="media/phone-stand.jpg" alt="" />
+            <img src="media/art/hold-red.jpg" alt="" />
+          </div>
+          <div class="foot-set">
+            <img src="media/for/design-present.jpg" alt="" />
+            <img src="media/art/hold-blue.jpg" alt="" />
+            <img src="media/card-holder.jpg" alt="" />
+            <img src="media/for/technic-screen.jpg" alt="" />
+            <img src="media/brand/wpall/board.png" alt="" />
+            <img src="media/art/print-magenta.jpg" alt="" />
+            <img src="media/pen-cup.jpg" alt="" />
+            <img src="media/for/technic-fabric.jpg" alt="" />
+            <img src="media/phone-stand.jpg" alt="" />
+            <img src="media/art/hold-red.jpg" alt="" />
+          </div>
+        </div>
+      </div>
+      <span>LITH</span>
+    </div>
+  </footer>
+  <aside class="drawer" data-bag hidden>
+    <div class="drawer-head">
+      <h2>Cart</h2>
+      <button type="button" class="text-btn" data-close-bag>Close</button>
+    </div>
+    <ul class="drawer-list" data-bag-list></ul>
+    <p class="empty" data-bag-empty>Cart is empty</p>
+    <div class="drawer-foot">
+      <button type="button" class="text-btn" data-checkout>Checkout</button>
+    </div>
+  </aside>
+  <div class="scrim" data-scrim hidden></div>
+  <dialog class="sheet" data-order-dialog>
+    <form method="dialog" data-order-form>
+      <h2>Order</h2>
+      <p>No account needed. A tracking link is sent by email.</p>
+      <label>Name <input name="name" required /></label>
+      <label>Email <input name="email" type="email" required /></label>
+      <label>Phone <input name="phone" required /></label>
+      <label>Address <textarea name="address" rows="3" required></textarea></label>
+      <label>Note <textarea name="note" rows="2"></textarea></label>
+      <p class="en-line" data-order-error hidden>The studio could not take this order. Try again in a moment.</p>
+      <p class="th" data-order-error hidden>สตูดิโอรับออเดอร์นี้ไม่ได้ ลองใหม่ในอีกสักครู่</p>
+      <div class="sheet-actions">
+        <button type="button" class="text-btn" data-close-order>Close</button>
+        <button type="submit">Place order</button>
+      </div>
+    </form>
+  </dialog>
+  <script src="motion.js"></script>
+  <script src="product.js"></script>
+  <script src="chrome.js?v=5"></script>
+</body>
+</html>

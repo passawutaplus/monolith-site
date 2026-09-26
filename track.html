@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Track — MONOLITH</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=8" />
+  <link rel="icon" href="media/logo-dark.png" />
+</head>
+<body>
+  <header class="bar" data-theme="dark">
+    <a class="logo" href="index.html" aria-label="MONOLITH">
+      <img class="logo-dark" src="media/logo-dark.png" alt="MONOLITH" style="display:block" />
+    </a>
+  </header>
+  <main class="track" id="track">
+    <p>Loading your order</p>
+  </main>
+  <script src="motion.js"></script>
+  <script>
+    const steps = [
+      ["received", "Received"],
+      ["confirmed", "Confirmed"],
+      ["packed", "Packed"],
+      ["shipped", "Shipped"],
+    ];
+    const carriers = {
+      kerry: (n) => `https://th.kerryexpress.com/th/track/?track=${encodeURIComponent(n)}`,
+      flash: (n) => `https://www.flashexpress.co.th/fle/tracking?se=${encodeURIComponent(n)}`,
+      thaipost: (n) => `https://track.thailandpost.co.th/?trackNumber=${encodeURIComponent(n)}`,
+      jnt: (n) => `https://www.jtexpress.co.th/index/query/gzquery.html?bills=${encodeURIComponent(n)}`,
+    };
+    const names = { kerry: "Kerry", flash: "Flash", thaipost: "Thailand Post", jnt: "J&T" };
+    const token = new URLSearchParams(location.search).get("token");
+    const root = document.querySelector("#track");
+
+    fetch(`/api/orders/${token}`)
+      .then((response) => response.json())
+      .then((order) => {
+        if (!order.code) {
+          root.innerHTML = "<h1>Order</h1><p>This order was not found.</p>";
+          return;
+        }
+        const index = steps.findIndex(([key]) => key === order.status);
+        const items = order.items.map((item) => `<li>${item.name} × ${item.qty}</li>`).join("");
+        const stepHtml = steps.map(([key, label], i) => `<li class="${i <= index ? "is-on" : ""}">${label}</li>`).join("");
+        let ship = "";
+        if (order.status === "shipped" && order.tracking) {
+          const href = carriers[order.carrier](order.tracking);
+          ship = `<p>${names[order.carrier]} · ${order.tracking}</p><a class="text-btn track-link" href="${href}" target="_blank" rel="noreferrer">Track shipment</a>`;
+        }
+        root.innerHTML = `<p class="eyebrow">Order</p><h1>${order.code}</h1><ul>${items}</ul><ol class="steps">${stepHtml}</ol>${ship}<p>${order.address}</p>`;
+      });
+  </script>
+  <script src="chrome.js?v=4"></script>
+</body>
+</html>

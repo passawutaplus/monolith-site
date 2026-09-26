@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Studio orders — MONOLITH</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=8" />
+  <link rel="icon" href="media/logo-dark.png" />
+</head>
+<body>
+  <header class="bar" data-theme="dark">
+    <a class="logo" href="index.html" aria-label="MONOLITH">
+      <img class="logo-dark" src="media/logo-dark.png" alt="MONOLITH" style="display:block" />
+    </a>
+  </header>
+  <main class="studio">
+    <h1>Orders</h1>
+    <p>Set the status and tracking number. The client sees them on the tracking link at once.</p>
+    <form id="gate">
+      <label>Studio key <input name="key" type="password" required /></label>
+      <button type="submit" class="text-btn">Open</button>
+    </form>
+    <ul class="studio-list" id="list" hidden></ul>
+  </main>
+  <script src="motion.js"></script>
+  <script>
+    const gate = document.querySelector("#gate");
+    const list = document.querySelector("#list");
+    let key = "";
+    const statuses = ["received", "confirmed", "packed", "shipped"];
+    const labels = { received: "Received", confirmed: "Confirmed", packed: "Packed", shipped: "Shipped" };
+
+    async function load() {
+      const response = await fetch("/api/admin/orders", { headers: { "X-Studio-Key": key } });
+      if (!response.ok) return;
+      const data = await response.json();
+      gate.hidden = true;
+      list.hidden = false;
+      list.innerHTML = "";
+      data.orders.forEach((order) => {
+        const li = document.createElement("li");
+        li.className = "studio-card";
+        const items = order.items.map((item) => `${item.name} × ${item.qty}`).join(", ");
+        li.innerHTML = `<strong>${order.code}</strong><p>${order.name} · ${order.email}</p><p>${items}</p><p>${order.address}</p>`;
+        const form = document.createElement("form");
+        form.innerHTML = `
+          <label>Status <select name="status">${statuses.map((status) => `<option value="${status}" ${status === order.status ? "selected" : ""}>${labels[status]}</option>`).join("")}</select></label>
+          <label>Carrier <select name="carrier"><option value="kerry">Kerry</option><option value="flash">Flash</option><option value="thaipost">Thailand Post</option><option value="jnt">J&T</option></select></label>
+          <label>Tracking <input name="tracking" value="${order.tracking || ""}" /></label>
+          <button type="submit" class="text-btn">Save</button>`;
+        form.carrier.value = order.carrier || "kerry";
+        form.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const body = Object.fromEntries(new FormData(form));
+          await fetch(`/api/admin/orders/${order.token}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "X-Studio-Key": key },
+            body: JSON.stringify(body),
+          });
+          form.querySelector("button").textContent = "Saved";
+        });
+        li.append(form);
+        list.append(li);
+      });
+      function card(title, lines) {
+        const li = document.createElement("li");
+        li.className = "studio-card";
+        const strong = document.createElement("strong");
+        strong.textContent = title;
+        li.append(strong);
+        lines.filter(Boolean).forEach((text) => {
+          const p = document.createElement("p");
+          p.textContent = text;
+          li.append(p);
+        });
+        list.append(li);
+      }
+      data.interest.forEach((note) => card(`Interest · ${note.object}`, [note.email, note.note]));
+      (data.inquiries || []).forEach((note) => card(`Inquire · ${note.subject || "Studio"}`, [note.name, note.email, note.phone, note.note]));
+      (data.follows || []).forEach((note) => card("Follow", [note.email]));
+    }
+
+    gate.addEventListener("submit", (event) => {
+      event.preventDefault();
+      key = new FormData(gate).get("key");
+      load();
+    });
+  </script>
+  <script src="chrome.js?v=4"></script>
+</body>
+</html>
