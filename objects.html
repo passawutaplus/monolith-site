@@ -6,8 +6,9 @@
   <title>Objects — MONOLITH</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=41" />
+  <link rel="stylesheet" href="styles.css?v=50" />
   <link rel="icon" href="media/logo-dark.png" />
+  <script>(function(d){if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;d.classList.add("motion-on");setTimeout(function(){d.classList.add("is-loaded")},2500)})(document.documentElement)</script>
 </head>
 <body>
   <header class="bar" data-theme="dark">
@@ -21,7 +22,7 @@
       <a href="services.html">Technic</a>
       <a href="index.html#contact">Contact</a>
     </nav>
-    <button class="bag" type="button" data-open-bag>Cart <span data-bag-count>0</span></button>
+    <button class="bag" type="button" data-open-bag>Request <span data-bag-count>0</span></button>
   </header>
   <main class="catalogue">
     <div class="catalogue-hero">
@@ -145,31 +146,32 @@
     </div>
   </footer>
   <aside class="drawer" data-bag hidden>
-    <div class="drawer-head"><h2>Cart</h2><button type="button" class="text-btn" data-close-bag>Close</button></div>
+    <div class="drawer-head"><h2>Request</h2><button type="button" class="text-btn" data-close-bag>Close</button></div>
     <ul class="drawer-list" data-bag-list></ul>
-    <p class="empty" data-bag-empty>Cart is empty</p>
-    <div class="drawer-foot"><button type="button" class="text-btn" data-checkout>Checkout</button></div>
+    <p class="empty" data-bag-empty>Nothing added yet. Open a piece and add it here.</p>
+    <div class="drawer-foot"><button type="button" class="text-btn" data-checkout>Send request</button></div>
   </aside>
   <div class="scrim" data-scrim hidden></div>
   <dialog class="sheet" data-order-dialog>
     <form method="dialog" data-order-form>
-      <h2>Order</h2>
-      <p>No account needed. A tracking link is sent by email.</p>
+      <h2>Request a quote</h2>
+      <p>The studio replies by email with price and timing. Nothing is charged here.</p>
       <label>Name <input name="name" required /></label>
       <label>Email <input name="email" type="email" required /></label>
-      <label>Phone <input name="phone" required /></label>
-      <label>Address <textarea name="address" rows="3" required></textarea></label>
+      <label>Phone <input name="phone" type="tel" /></label>
+      <label>Ship to (optional) <textarea name="address" rows="2"></textarea></label>
       <label>Note <textarea name="note" rows="2"></textarea></label>
-      <p class="en-line" data-order-error hidden>The studio could not take this order. Try again in a moment.</p>
-      <p class="th" data-order-error hidden>สตูดิโอรับออเดอร์นี้ไม่ได้ ลองใหม่ในอีกสักครู่</p>
+      <p class="sheet-status" data-order-error role="status" hidden></p>
       <div class="sheet-actions">
         <button type="button" class="text-btn" data-close-order>Close</button>
-        <button type="submit">Place order</button>
+        <button type="submit">Send request</button>
       </div>
     </form>
   </dialog>
-  <script src="motion.js"></script>
-  <script src="bag.js"></script>
+  <script src="send.js?v=1"></script>
+  <script src="inquire.js?v=7"></script>
+  <script src="motion.js?v=6"></script>
+  <script src="bag.js?v=2"></script>
   <script src="chrome.js?v=5"></script>
 </body>
 </html>

@@ -50,86 +50,33 @@ function ensureReplyFields(form) {
 
 ensureReplyFields(inquireForm);
 
-const picked = [];
-
-function addImages(form) {
-  if (!form || form.querySelector("[data-images]")) return;
-  const note = form.querySelector("textarea");
-  const field = document.createElement("div");
-  field.className = "file-field";
-  field.innerHTML = `
-    <span class="file-label"><span class="en-line">File</span><span class="th">แนบไฟล์</span></span>
-    <button type="button" class="file-add" data-pick-images>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.2 7.2v8.6a4.2 4.2 0 0 1-8.4 0V6.8a2.7 2.7 0 0 1 5.4 0v8.3a1.3 1.3 0 0 1-2.6 0V8" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-      <span class="en-line">Choose a file</span><span class="th">เลือกไฟล์</span>
-    </button>
-    <input data-images name="images" type="file" accept="image/*" multiple hidden />
-    <ul class="file-thumbs" data-thumbs></ul>
-    <p class="sheet-status" data-file-status hidden></p>
-  `;
-  const holder = note?.closest("label");
-  if (holder) holder.after(field);
-  else form.querySelector(".sheet-actions")?.before(field);
-
-  const input = field.querySelector("[data-images]");
-  field.querySelector("[data-pick-images]").addEventListener("click", () => input.click());
-  input.addEventListener("change", () => {
-    const status = field.querySelector("[data-file-status]");
-    const thai = document.documentElement.dataset.ui === "th";
-    const rejected = [];
-    [...input.files].forEach((file) => {
-      if (file.type && !file.type.startsWith("image/")) rejected.push("type");
-      else if (file.size > 2 * 1024 * 1024) rejected.push("size");
-      else picked.push(file);
-    });
-    input.value = "";
-    renderThumbs(field.querySelector("[data-thumbs]"));
-    status.hidden = rejected.length === 0;
-    status.textContent = rejected.includes("size")
-      ? (thai ? "ไฟล์ต้องไม่เกิน 2 MB" : "File must be 2 MB or smaller.")
-      : rejected.includes("type")
-        ? (thai ? "อัปได้เฉพาะไฟล์รูป" : "Images only.")
-        : "";
-  });
+function addImageNote(form) {
+  if (!form || form.querySelector("[data-image-note]")) return;
+  const note = document.createElement("p");
+  note.className = "sheet-hint";
+  note.dataset.imageNote = "";
+  note.innerHTML = `<span class="en-line">Have reference images? Send them on <a href="https://lin.ee/zi0qAQb" target="_blank" rel="noreferrer">LINE</a> or reply to the studio's email.</span><span class="th">มีรูปอ้างอิง ส่งทาง <a href="https://lin.ee/zi0qAQb" target="_blank" rel="noreferrer">LINE</a> หรือตอบกลับอีเมลของสตูดิโอได้เลย</span>`;
+  const holder = form.querySelector("textarea")?.closest("label");
+  if (holder) holder.after(note);
+  else form.querySelector(".sheet-actions")?.before(note);
 }
 
-function renderThumbs(list) {
-  if (!list) return;
-  list.querySelectorAll("img").forEach((img) => URL.revokeObjectURL(img.src));
-  list.replaceChildren();
-  const thai = document.documentElement.dataset.ui === "th";
-  picked.forEach((file, index) => {
-    const item = document.createElement("li");
-    const img = document.createElement("img");
-    img.src = URL.createObjectURL(file);
-    img.alt = file.name;
-    const remove = document.createElement("button");
-    remove.type = "button";
-    remove.className = "thumb-remove";
-    remove.setAttribute("aria-label", thai ? `ลบ ${file.name}` : `Remove ${file.name}`);
-    remove.textContent = "×";
-    remove.addEventListener("click", () => {
-      URL.revokeObjectURL(img.src);
-      picked.splice(index, 1);
-      renderThumbs(list);
-    });
-    item.append(img, remove);
-    list.append(item);
-  });
-}
+addImageNote(inquireForm);
 
-function clearImages(form) {
-  form?.querySelectorAll("[data-thumbs] img").forEach((img) => URL.revokeObjectURL(img.src));
-  picked.length = 0;
-  form?.querySelector("[data-thumbs]")?.replaceChildren();
-  const fileStatus = form?.querySelector("[data-file-status]");
-  if (fileStatus) {
-    fileStatus.hidden = true;
-    fileStatus.textContent = "";
+function formStatus(form) {
+  let status = form.querySelector("[data-send-status]");
+  if (!status) {
+    status = document.createElement("p");
+    status.className = "sheet-status";
+    status.dataset.sendStatus = "";
+    status.setAttribute("role", "status");
+    status.hidden = true;
+    form.querySelector(".sheet-actions")?.before(status);
   }
+  return status;
 }
 
-addImages(inquireForm);
+window.monolithFormStatus = formStatus;
 
 const done = document.createElement("dialog");
 done.className = "sheet inquire-done";
@@ -143,6 +90,8 @@ done.querySelector("[data-close-done]").addEventListener("click", () => {
   done.close();
   done.classList.remove("is-in");
 });
+
+window.monolithDone = () => showDone();
 
 function showDone() {
   done.classList.remove("is-in");
@@ -168,30 +117,34 @@ document.querySelector("[data-close-inquire]")?.addEventListener("click", () => 
 inquireForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
   const form = event.currentTarget;
-  const status = form.querySelector("[data-inquire-status]");
+  const status = formStatus(form);
+  const submit = form.querySelector('[type="submit"]');
   const data = new FormData(form);
-  const body = {
+  const title = document.querySelector("[data-inquire-title]")?.textContent?.trim();
+  const subject = inquire?.dataset.subject || title || "Contact";
+  const fields = {
+    subject,
     name: String(data.get("name") || "").trim(),
     email: String(data.get("email") || "").trim(),
     phone: String(data.get("phone") || "").trim(),
     line: String(data.get("line") || "").trim(),
     note: String(data.get("note") || "").trim(),
-    images: picked.map((file) => file.name),
+    page: location.pathname + location.search,
   };
-  const title = document.querySelector("[data-inquire-title]")?.textContent?.trim();
-  body.subject = inquire?.dataset.subject || title || "Contact";
-  if (status) status.hidden = true;
+  const thai = document.documentElement.dataset.ui === "th";
+  status.hidden = true;
+  if (submit) { submit.disabled = true; submit.dataset.label ??= submit.textContent; submit.textContent = thai ? "กำลังส่ง…" : "Sending…"; }
+  const ok = await window.monolith.send(subject, fields);
+  if (submit) { submit.disabled = false; submit.textContent = submit.dataset.label; }
+  if (!ok) {
+    const link = window.monolith.mailto(subject, fields);
+    status.innerHTML = thai
+      ? `ส่งไม่สำเร็จ <a href="${link}">ส่งข้อความนี้ทางอีเมลแทน</a> หรือทัก <a href="https://lin.ee/zi0qAQb" target="_blank" rel="noreferrer">LINE</a>`
+      : `This didn't send. <a href="${link}">Send it by email instead</a>, or message on <a href="https://lin.ee/zi0qAQb" target="_blank" rel="noreferrer">LINE</a>.`;
+    status.hidden = false;
+    return;
+  }
   form.reset();
-  clearImages(form);
   inquire?.close();
   showDone();
-  try {
-    await fetch("/api/inquire", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-  } catch {
-    /* The check still confirms the note was taken on this page. */
-  }
 });

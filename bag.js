@@ -48,26 +48,31 @@ document.querySelector("[data-close-order]").addEventListener("click", () => ord
 document.querySelector("[data-order-form]").addEventListener("submit", async (event) => {
   event.preventDefault();
   const form = event.currentTarget;
-  const body = Object.fromEntries(new FormData(form));
-  body.items = bag.map((item) => ({ id: item.id, name: item.name, qty: item.qty }));
-  let response;
-  try {
-    response = await fetch("/api/orders", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-  } catch {
-    response = null;
-  }
-  if (!response || !response.ok) {
-    form.querySelectorAll("[data-order-error]").forEach((node) => { node.hidden = false; });
+  const data = Object.fromEntries(new FormData(form));
+  const items = bag.map((item) => [item.name, item.color, item.size].filter(Boolean).join(" · ") + ` × ${item.qty}`).join("\n");
+  const thai = document.documentElement.dataset.ui === "th";
+  const status = form.querySelector("[data-order-error]");
+  const submit = form.querySelector('[type="submit"]');
+  form.querySelectorAll("[data-order-error]").forEach((node) => { node.hidden = true; });
+  if (submit) { submit.disabled = true; submit.dataset.label ??= submit.textContent; submit.textContent = thai ? "กำลังส่ง…" : "Sending…"; }
+  const fields = { ...data, items };
+  const ok = await window.monolith.send("Quote request", fields);
+  if (submit) { submit.disabled = false; submit.textContent = submit.dataset.label; }
+  if (!ok) {
+    const link = window.monolith.mailto("Quote request", fields);
+    if (status) {
+      status.innerHTML = thai
+        ? `ส่งไม่สำเร็จ <a href="${link}">ส่งรายการนี้ทางอีเมลแทน</a>`
+        : `This didn't send. <a href="${link}">Send the list by email instead</a>.`;
+      status.hidden = false;
+    }
     return;
   }
-  const order = await response.json();
   bag.length = 0;
   renderBag();
+  form.reset();
   orderDialog.close();
-  location.href = `track.html?token=${order.token}`;
+  if (window.monolithDone) window.monolithDone();
+  else alert(thai ? "ส่งแล้ว สตูดิโอจะตอบกลับทางอีเมล" : "Sent. The studio replies by email.");
 });
 renderBag();
