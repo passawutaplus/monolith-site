@@ -2,12 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="robots" content="noindex" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Track — MONOLITH</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=8" />
+  <link rel="stylesheet" href="styles.css?v=50" />
   <link rel="icon" href="media/logo-dark.png" />
+  <script>(function(d){if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;d.classList.add("motion-on");setTimeout(function(){d.classList.add("is-loaded")},2500)})(document.documentElement)</script>
 </head>
 <body>
   <header class="bar" data-theme="dark">
@@ -18,7 +20,8 @@
   <main class="track" id="track">
     <p>Loading your order</p>
   </main>
-  <script src="motion.js"></script>
+  <script src="send.js?v=1"></script>
+  <script src="motion.js?v=6"></script>
   <script>
     const steps = [
       ["received", "Received"],
@@ -36,7 +39,9 @@
     const token = new URLSearchParams(location.search).get("token");
     const root = document.querySelector("#track");
 
-    fetch(`/api/orders/${token}`)
+    if (!token) {
+      root.innerHTML = '<h1>Order</h1><p>No order link here. Questions about a piece? <a href="index.html#contact">Contact the studio</a>.</p>';
+    } else fetch(`/api/orders/${encodeURIComponent(token)}`)
       .then((response) => response.json())
       .then((order) => {
         if (!order.code) {

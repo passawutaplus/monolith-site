@@ -7,8 +7,9 @@
   <meta name="description" content="Abstract chrome and light by AUN+aun. Forms for an inner state: truth, feeling, silence, and the turn of a life." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=42" />
+  <link rel="stylesheet" href="styles.css?v=50" />
   <link rel="icon" href="media/logo-dark.png" />
+  <script>(function(d){if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;d.classList.add("motion-on");setTimeout(function(){d.classList.add("is-loaded")},2500)})(document.documentElement)</script>
 </head>
 <body>
   <header class="bar" data-theme="dark">
@@ -111,7 +112,8 @@
     <section class="art-film" data-film hidden>
       <p class="eyebrow">Film</p>
       <video controls playsinline preload="metadata" poster="media/art/hold-blue.jpg">
-        <source src="media/art/film.mp4" type="video/mp4" />
+        <!-- To show the film: add media/art/film.mp4, remove "hidden" from this section, and put back
+             <source src="media/art/film.mp4" type="video/mp4" /> -->
       </video>
       <p>A moving image of the print series.</p>
     </section>
@@ -183,8 +185,9 @@
       </div>
     </form>
   </dialog>
-  <script src="motion.js"></script>
-  <script src="inquire.js?v=6"></script>
+  <script src="send.js?v=1"></script>
+  <script src="motion.js?v=6"></script>
+  <script src="inquire.js?v=7"></script>
   <script>
     const film = document.querySelector("[data-film]");
     const video = film.querySelector("video");

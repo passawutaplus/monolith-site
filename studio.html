@@ -2,12 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="robots" content="noindex" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Studio orders — MONOLITH</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=8" />
+  <link rel="stylesheet" href="styles.css?v=50" />
   <link rel="icon" href="media/logo-dark.png" />
+  <script>(function(d){if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;d.classList.add("motion-on");setTimeout(function(){d.classList.add("is-loaded")},2500)})(document.documentElement)</script>
 </head>
 <body>
   <header class="bar" data-theme="dark">
@@ -24,7 +26,8 @@
     </form>
     <ul class="studio-list" id="list" hidden></ul>
   </main>
-  <script src="motion.js"></script>
+  <script src="send.js?v=1"></script>
+  <script src="motion.js?v=6"></script>
   <script>
     const gate = document.querySelector("#gate");
     const list = document.querySelector("#list");

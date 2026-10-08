@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /studio.html
+Disallow: /track.html
 
-Sitemap: /sitemap.xml
+Sitemap: https://monolith-site.vercel.app/sitemap.xml
